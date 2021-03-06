@@ -1,4 +1,5 @@
 const express = require('express')
+
 const app = express()
 
 // Import Database Connection
@@ -8,10 +9,11 @@ const sequelize = require('./util/database')
 const authRoute = require('./routes/auth')
 
 // Import Models
-const User = require('./model/user')
+
+app.use(express.json())
 
 // Routes Middleware
-app.get('/register', authRoute)
+app.post('/register', authRoute)
 
 sequelize.sync()
   .then(() => {
