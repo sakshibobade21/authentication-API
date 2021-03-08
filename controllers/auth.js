@@ -37,6 +37,9 @@ exports.register = async (req, res, next) => {
 }
 
 exports.login = async (req, res, next) => {
+  const secret1 = 'secret1'
+  const secret2 = 'secret2'
+
   const username = req.body.username
   const password = req.body.password
 
@@ -56,14 +59,30 @@ exports.login = async (req, res, next) => {
       throw err
     }
 
-    const token = jwt.sign({
+    const accessToken = jwt.sign({
       email: user.email,
       userId: user.id
     },
-      'secret',
+      secret1,
       { expiresIn: '1h' })
+
+    const refreshToken = jwt.sign({
+      email: user.email,
+      userId: user.id
+    },
+      secret2,
+      { expiresIn: '7d' })
+
+    res.cookie('accessToken', accessToken, {
+      expires: new Date(Date.now() + 60000)
+    })
+    res.cookie('refreshToken', refreshToken, {
+      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+    })
+    // res.setHeader('Set-Cookie', 'accessToken=' + accessToken + ';')
     res.status(200).json({
-      token: token
+      accessToken,
+      refreshToken
     })
   } catch (err) {
     next(err)

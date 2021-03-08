@@ -3,11 +3,12 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const app = express()
 
+const cookieParser = require('cookie-parser')
+
 // Import Database Connection
 const sequelize = require('./util/database')
 
-// Import Routes
-const authRoute = require('./routes/auth')
+app.use(cookieParser())
 
 app.use(bodyParser.json())
 // app.use(express.json())
@@ -19,6 +20,8 @@ app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
   next()
 })
+// Import Routes
+const authRoute = require('./routes/auth')
 
 // Routes Middleware
 app.use('/user', authRoute)
