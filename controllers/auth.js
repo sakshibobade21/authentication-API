@@ -94,3 +94,11 @@ exports.test = (req, res, next) => {
     status: 'success'
   })
 }
+
+exports.logout = (req, res, next) => {
+  res.clearCookie('accessToken')
+  res.clearCookie('refreshToken')
+  res.status(200).json({
+    status: 'success'
+  })
+}

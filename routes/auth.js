@@ -36,5 +36,7 @@ router.post('/register',
 
 router.post('/login', authController.login)
 
+router.get('/logout', authController.logout)
+
 router.get('/test', isAuth, authController.test)
 module.exports = router
