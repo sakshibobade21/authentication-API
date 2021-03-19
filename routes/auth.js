@@ -36,7 +36,9 @@ router.post('/register',
 
 router.post('/login', authController.login)
 
-router.get('/logout', authController.logout)
+router.get('/logout', isAuth, authController.logout)
+
+router.get('/logout-all-devices', isAuth, authController.logoutAllDevices)
 
 router.get('/test', isAuth, authController.test)
 module.exports = router

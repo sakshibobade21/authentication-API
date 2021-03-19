@@ -1,7 +1,10 @@
+/* eslint-disable indent */
 const User = require('../model/user')
 const { validationResult } = require('express-validator')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+const { v4: uuidv4 } = require('uuid')
+const client = require('../middleware/redis')
 
 exports.register = async (req, res, next) => {
   const username = req.body.username
@@ -52,34 +55,47 @@ exports.login = async (req, res, next) => {
     }
 
     const isEqual = await bcrypt.compare(password, user.password)
-    console.log(isEqual)
     if (!isEqual) {
       const err = new Error('Wrong Password')
       err.statusCode = 401
       throw err
     }
 
+    const sessionId = uuidv4()
+
     const accessToken = jwt.sign({
       email: user.email,
-      userId: user.id
+      userId: user.id,
+      type: 'access',
+      sessionId: sessionId
     },
       secret1,
       { expiresIn: '1h' })
 
     const refreshToken = jwt.sign({
       email: user.email,
-      userId: user.id
+      userId: user.id,
+      type: 'refresh',
+      sessionId: sessionId
     },
       secret2,
       { expiresIn: '7d' })
 
     res.cookie('accessToken', accessToken, {
-      expires: new Date(Date.now() + 60000)
+      expires: new Date(Date.now() + 60 * 60 * 1000) // 1 hr
     })
     res.cookie('refreshToken', refreshToken, {
-      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days
     })
-    // res.setHeader('Set-Cookie', 'accessToken=' + accessToken + ';')
+
+    client.hmset('userId:' + user.id, {
+      username: user.username,
+      email: user.email,
+      name: user.name
+    })
+
+    client.saddAsync('sessions:' + user.id, sessionId)
+
     res.status(200).json({
       accessToken,
       refreshToken
@@ -98,7 +114,19 @@ exports.test = (req, res, next) => {
 exports.logout = (req, res, next) => {
   res.clearCookie('accessToken')
   res.clearCookie('refreshToken')
+
+  client.srem('sessions:' + req.userId, req.sessionId)
   res.status(200).json({
-    status: 'success'
+    status: 'Logged Out Successfully'
+  })
+}
+
+exports.logoutAllDevices = (req, res, next) => {
+  res.clearCookie('accessToken')
+  res.clearCookie('refreshToken')
+
+  client.del('userId:' + req.userId, 'sessions:' + req.userId)
+  res.status(200).json({
+    status: 'Logged out successfully from all the devices'
   })
 }

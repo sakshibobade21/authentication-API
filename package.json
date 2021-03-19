@@ -13,6 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "bluebird": "^3.7.2",
     "body-parser": "^1.19.0",
     "cookie-parser": "^1.4.5",
     "express": "^4.17.1",
@@ -20,7 +21,8 @@
     "jsonwebtoken": "^8.5.1",
     "mysql2": "^2.2.5",
     "redis": "^3.0.2",
-    "sequelize": "^6.5.0"
+    "sequelize": "^6.5.0",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "eslint": "^7.21.0",
