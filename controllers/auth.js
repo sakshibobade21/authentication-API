@@ -40,13 +40,16 @@ exports.register = async (req, res, next) => {
 }
 
 exports.login = async (req, res, next) => {
+  // Secrets for the access and the refresh tokens
   const secret1 = 'secret1'
   const secret2 = 'secret2'
 
+  // Get the user data from the request body
   const username = req.body.username
   const password = req.body.password
 
   try {
+    // Check if the user exists in db
     const user = await User.findOne({ where: { username: username } })
     if (!user) {
       const err = new Error('User not found!')
@@ -54,6 +57,7 @@ exports.login = async (req, res, next) => {
       throw err
     }
 
+    // Check if the password is valid
     const isEqual = await bcrypt.compare(password, user.password)
     if (!isEqual) {
       const err = new Error('Wrong Password')
@@ -61,26 +65,31 @@ exports.login = async (req, res, next) => {
       throw err
     }
 
-    const sessionId = uuidv4()
+    // Generate uuids for access and refresh token
+    const accessTokenId = uuidv4()
+    const refreshTokenId = uuidv4()
 
+    // Generate access token
     const accessToken = jwt.sign({
       email: user.email,
       userId: user.id,
       type: 'access',
-      sessionId: sessionId
+      sessionId: accessTokenId
     },
       secret1,
       { expiresIn: '1h' })
 
+    // Generate refresh token
     const refreshToken = jwt.sign({
       email: user.email,
       userId: user.id,
       type: 'refresh',
-      sessionId: sessionId
+      sessionId: refreshTokenId
     },
       secret2,
       { expiresIn: '7d' })
 
+    // Add access and refresh token to the cookie
     res.cookie('accessToken', accessToken, {
       expires: new Date(Date.now() + 60 * 60 * 1000) // 1 hr
     })
@@ -88,13 +97,16 @@ exports.login = async (req, res, next) => {
       expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days
     })
 
+    // Add user data to the cache
     client.hmset('userId:' + user.id, {
       username: user.username,
       email: user.email,
       name: user.name
     })
 
-    client.saddAsync('sessions:' + user.id, sessionId)
+    // Add uuids of access and refresh token to the cache
+    client.saddAsync('accessToken:sessions:' + user.id, accessTokenId)
+    client.saddAsync('refreshToken:sessions:' + user.id, refreshTokenId)
 
     res.status(200).json({
       accessToken,
@@ -112,13 +124,19 @@ exports.test = (req, res, next) => {
 }
 
 exports.logout = (req, res, next) => {
-  res.clearCookie('accessToken')
-  res.clearCookie('refreshToken')
+  try {
+    res.clearCookie('accessToken')
+    res.clearCookie('refreshToken')
 
-  client.srem('sessions:' + req.userId, req.sessionId)
-  res.status(200).json({
-    status: 'Logged Out Successfully'
-  })
+    client.sremAsync('accessToken:sessions:' + req.userId, req.accessTokenId)
+    client.sremAsync('refreshToken:sessions:' + req.userId, req.refreshTokenId)
+
+    res.status(200).json({
+      status: 'Logged Out Successfully'
+    })
+  } catch (err) {
+    return next(err)
+  }
 }
 
 exports.logoutAllDevices = (req, res, next) => {
