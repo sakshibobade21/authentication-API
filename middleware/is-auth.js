@@ -12,7 +12,8 @@ module.exports = async (req, res, next) => {
   if (!accessToken) {
     const err = new Error('Not Authenticated')
     err.statusCode = 403
-    return next(err)
+    next(err)
+    return err
   }
   try {
     try {
@@ -28,7 +29,8 @@ module.exports = async (req, res, next) => {
       if (!isAccessTokenExist) {
         const err = new Error('Not Authenticated')
         err.statusCode = 401
-        return next(err)
+        next(err)
+        return err
       }
 
       // Get the sessionId from the payload of access token
@@ -95,7 +97,8 @@ module.exports = async (req, res, next) => {
     }
   } catch (err) {
     err.statusCode = 401
-    return next(err)
+    next(err)
+    return err
   }
   next()
 }
