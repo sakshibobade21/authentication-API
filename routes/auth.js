@@ -40,5 +40,7 @@ router.get('/logout', isAuth, authController.logout)
 
 router.get('/logout-all-devices', isAuth, authController.logoutAllDevices)
 
+router.get('/logout-other-devices', isAuth, authController.logoutOtherDevices)
+
 router.get('/test', isAuth, authController.test)
 module.exports = router

@@ -8,13 +8,13 @@ module.exports = async (req, res, next) => {
   let accessToken = req.cookies.accessToken
   const refreshToken = req.cookies.refreshToken
 
+  // Check if access token is present
+  if (!accessToken) {
+    const err = new Error('Not Authenticated')
+    err.statusCode = 403
+    return next(err)
+  }
   try {
-    // Check if access token is present
-    if (!accessToken) {
-      const err = new Error('Not Authenticated')
-      err.statusCode = 403
-      throw err
-    }
     try {
       // Verify the access token
       const decodedAccessToken = jwt.verify(accessToken, 'secret1')
@@ -27,12 +27,16 @@ module.exports = async (req, res, next) => {
 
       if (!isAccessTokenExist) {
         const err = new Error('Not Authenticated')
-        err.statusCode = 403
+        err.statusCode = 401
         return next(err)
       }
 
       // Get the sessionId from the payload of access token
       req.accessTokenId = decodedAccessToken.sessionId
+
+      // Get the sessionId from the payload of refresh token
+      const refreshTokenPayload = jwt.decode(refreshToken, { verify_signature: false })
+      req.refreshTokenId = refreshTokenPayload.sessionId
     } catch (err) {
       // Generate the new access token only if it is expired and not if it is invalid
       if (err.message !== 'jwt expired') {
@@ -79,6 +83,8 @@ module.exports = async (req, res, next) => {
         'secret1',
         { expiresIn: '1h' })
 
+      // Get the sessionId from the new access token
+      req.accessTokenId = newAccessTokenId
       // Store the access token into the cookie
       res.cookie('accessToken', accessToken, {
         expires: new Date(Date.now() + 60 * 60 * 1000)

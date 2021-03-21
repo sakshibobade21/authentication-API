@@ -143,8 +143,32 @@ exports.logoutAllDevices = (req, res, next) => {
   res.clearCookie('accessToken')
   res.clearCookie('refreshToken')
 
-  client.del('userId:' + req.userId, 'sessions:' + req.userId)
+  client.del(
+    'userId:' + req.userId,
+    'accessToken:sessions:' + req.userId,
+    'refreshToken:sessions:' + req.userId
+  )
+
   res.status(200).json({
     status: 'Logged out successfully from all the devices'
+  })
+}
+
+exports.logoutOtherDevices = async (req, res, next) => {
+  // const accessTokenCursor = '0'
+  // const refreshTokenCursor = '0'
+  const cursor = '0'
+
+  const accessTokenValues = await client.sscanAsync('accessToken:sessions:' + req.userId, cursor, 'MATCH', '*')
+  const refreshTokenValues = await client.sscanAsync('refreshToken:sessions:' + req.userId, cursor, 'MATCH', '*')
+
+  client.sremAsync('accessToken:sessions:' + req.userId, accessTokenValues[1])
+  client.saddAsync('accessToken:sessions:' + req.userId, req.accessTokenId)
+
+  client.sremAsync('refreshToken:sessions:' + req.userId, refreshTokenValues[1])
+  client.saddAsync('refreshToken:sessions:' + req.userId, req.refreshTokenId)
+
+  res.status(200).json({
+    status: 'Logged out successfully from all other devices'
   })
 }
