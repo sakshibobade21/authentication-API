@@ -121,9 +121,6 @@ exports.test = (req, res, next) => {
 
 exports.logout = (req, res, next) => {
   try {
-    // res.clearCookie('accessToken')
-    // res.clearCookie('refreshToken')
-
     client.sremAsync('accessToken:sessions:' + req.userId, req.accessTokenId)
     client.sremAsync('refreshToken:sessions:' + req.userId, req.refreshTokenId)
 
@@ -136,9 +133,6 @@ exports.logout = (req, res, next) => {
 }
 
 exports.logoutAllDevices = (req, res, next) => {
-  // res.clearCookie('accessToken')
-  // res.clearCookie('refreshToken')
-
   client.del(
     'userId:' + req.userId,
     'accessToken:sessions:' + req.userId,
@@ -151,8 +145,6 @@ exports.logoutAllDevices = (req, res, next) => {
 }
 
 exports.logoutOtherDevices = async (req, res, next) => {
-  // const accessTokenCursor = '0'
-  // const refreshTokenCursor = '0'
   const cursor = '0'
 
   const accessTokenValues = await client.sscanAsync('accessToken:sessions:' + req.userId, cursor, 'MATCH', '*')
