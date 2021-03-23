@@ -48,7 +48,7 @@ describe('Auth Middleware', () => {
       }
     }
     sinon.stub(jwt, 'verify')
-    jwt.verify.returns({ userId: 'abc' })
+    jwt.verify.returns({ userId: 'abc', sessionId: '123' })
 
     sinon.stub(client, 'sismemberAsync')
     client.sismemberAsync.returns(0)

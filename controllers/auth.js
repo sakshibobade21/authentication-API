@@ -71,9 +71,7 @@ exports.login = async (req, res, next) => {
 
     // Generate access token
     const accessToken = jwt.sign({
-      email: user.email,
       userId: user.id,
-      type: 'access',
       sessionId: accessTokenId
     },
       secret1,
@@ -81,9 +79,7 @@ exports.login = async (req, res, next) => {
 
     // Generate refresh token
     const refreshToken = jwt.sign({
-      email: user.email,
       userId: user.id,
-      type: 'refresh',
       sessionId: refreshTokenId
     },
       secret2,
@@ -125,8 +121,8 @@ exports.test = (req, res, next) => {
 
 exports.logout = (req, res, next) => {
   try {
-    res.clearCookie('accessToken')
-    res.clearCookie('refreshToken')
+    // res.clearCookie('accessToken')
+    // res.clearCookie('refreshToken')
 
     client.sremAsync('accessToken:sessions:' + req.userId, req.accessTokenId)
     client.sremAsync('refreshToken:sessions:' + req.userId, req.refreshTokenId)
@@ -140,8 +136,8 @@ exports.logout = (req, res, next) => {
 }
 
 exports.logoutAllDevices = (req, res, next) => {
-  res.clearCookie('accessToken')
-  res.clearCookie('refreshToken')
+  // res.clearCookie('accessToken')
+  // res.clearCookie('refreshToken')
 
   client.del(
     'userId:' + req.userId,

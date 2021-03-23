@@ -41,7 +41,7 @@ module.exports = async (req, res, next) => {
       req.refreshTokenId = refreshTokenPayload.sessionId
     } catch (err) {
       // Generate the new access token only if it is expired and not if it is invalid
-      if (err.message !== 'jwt expired') {
+      if (err.name !== 'TokenExpiredError') {
         throw err
       }
 
@@ -77,9 +77,7 @@ module.exports = async (req, res, next) => {
       // Generate the new access token
       const newAccessTokenId = uuidv4()
       accessToken = jwt.sign({
-        email: decodedRefreshToken.email,
         userId: decodedRefreshToken.userId,
-        type: 'access',
         sessionId: newAccessTokenId
       },
         'secret1',
