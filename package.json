@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "engines": {
+    "node": "14.15.4"
+  },
   "scripts": {
     "test": "mocha",
     "start": "nodemon app.js",
