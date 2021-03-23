@@ -1,13 +1,23 @@
+const fs = require('fs')
+const path = require('path')
+
 const express = require('express')
-
 const bodyParser = require('body-parser')
-const app = express()
-
 const cookieParser = require('cookie-parser')
+const helmet = require('helmet')
+const morgan = require('morgan')
 
-// Import Database Connection
 const sequelize = require('./util/database')
 
+const app = express()
+
+const accessLogStream = fs.createWriteStream(
+  path.join(__dirname, 'access.log'),
+  { flag: 'a' }
+)
+
+app.use(helmet())
+app.use(morgan('combined', { stream: accessLogStream }))
 app.use(cookieParser())
 
 app.use(bodyParser.json())
