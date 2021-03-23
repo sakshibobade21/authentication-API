@@ -1,7 +1,8 @@
 /* eslint-disable indent */
 const jwt = require('jsonwebtoken')
-const client = require('../middleware/redis')
+const client = require('../util/redis')
 const { v4: uuidv4 } = require('uuid')
+const config = require('config')
 
 module.exports = async (req, res, next) => {
   // Get the access and refresh token from cookies
@@ -18,7 +19,7 @@ module.exports = async (req, res, next) => {
   try {
     try {
       // Verify the access token
-      const decodedAccessToken = jwt.verify(accessToken, 'secret1')
+      const decodedAccessToken = jwt.verify(accessToken, config.get('accessToken.secret'))
 
       // Get the user id from the payload of access token
       req.userId = decodedAccessToken.userId
@@ -53,7 +54,10 @@ module.exports = async (req, res, next) => {
       }
 
       // Verify the refresh token
-      const decodedRefreshToken = jwt.verify(refreshToken, 'secret2')
+      const decodedRefreshToken = jwt.verify(
+        refreshToken,
+        config.get('refreshToken.secret')
+      )
 
       // Get the user id from the payload of refresh token
       req.userId = decodedRefreshToken.userId
@@ -71,7 +75,11 @@ module.exports = async (req, res, next) => {
       req.refreshTokenId = decodedRefreshToken.sessionId
 
       // Remove the uuid of the expired access token from the cache.
-      const payload = jwt.verify(accessToken, 'secret1', { ignoreExpiration: true })
+      const payload = jwt.verify(
+        accessToken,
+        config.get('accessToken.secret'),
+        { ignoreExpiration: true }
+      )
       client.sremAsync('accessToken:sessions:' + req.userId, payload.sessionId)
 
       // Generate the new access token
@@ -80,8 +88,8 @@ module.exports = async (req, res, next) => {
         userId: decodedRefreshToken.userId,
         sessionId: newAccessTokenId
       },
-        'secret1',
-        { expiresIn: '1h' })
+        config.get('accessToken.secret'),
+        { expiresIn: config.get('accessToken.expiry') })
 
       // Get the sessionId from the new access token
       req.accessTokenId = newAccessTokenId

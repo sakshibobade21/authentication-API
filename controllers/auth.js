@@ -4,7 +4,8 @@ const { validationResult } = require('express-validator')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const { v4: uuidv4 } = require('uuid')
-const client = require('../middleware/redis')
+const client = require('../util/redis')
+const config = require('config')
 
 exports.register = async (req, res, next) => {
   const username = req.body.username
@@ -40,10 +41,6 @@ exports.register = async (req, res, next) => {
 }
 
 exports.login = async (req, res, next) => {
-  // Secrets for the access and the refresh tokens
-  const secret1 = 'secret1'
-  const secret2 = 'secret2'
-
   // Get the user data from the request body
   const username = req.body.username
   const password = req.body.password
@@ -74,16 +71,16 @@ exports.login = async (req, res, next) => {
       userId: user.id,
       sessionId: accessTokenId
     },
-      secret1,
-      { expiresIn: '1h' })
+      config.get('accessToken.secret'),
+      { expiresIn: config.get('accessToken.expiry') })
 
     // Generate refresh token
     const refreshToken = jwt.sign({
       userId: user.id,
       sessionId: refreshTokenId
     },
-      secret2,
-      { expiresIn: '7d' })
+      config.get('refreshToken.secret'),
+      { expiresIn: config.get('refreshToken.expiry') })
 
     // Add access and refresh token to the cookie
     res.cookie('accessToken', accessToken, {

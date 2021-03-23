@@ -1,0 +1,10 @@
+{
+    "accessToken": {
+        "expiry": "1s",
+        "secret": "accessTokenSecret"
+    },
+    "refreshToken": {
+        "expiry": "7d",
+        "secret": "refreshTokenSecret"
+    }
+}
