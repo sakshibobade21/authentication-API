@@ -23,6 +23,8 @@ app.use(cookieParser())
 app.use(bodyParser.json())
 // app.use(express.json())
 
+console.log('PROCESS:', process.env.abc)
+
 // Enabling CORS
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*')

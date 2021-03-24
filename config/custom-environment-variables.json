@@ -1,0 +1,20 @@
+{
+    "accessToken": {
+        "secret": "ACCESS_TOKEN_SECRET"
+    },
+    "refreshToken": {
+        "secret": "REFRESH_TOKEN_SECRET"
+    },
+    "dbConfig": {
+        "name": "MYSQL_DB_NAME",
+        "usename": "MYSQL_USER",
+        "password": "MYSQL_PASSWORD",
+        "host": "MYSQL_HOST",
+        "port": "MYSQL_PORT"
+    },
+    "redisConfig": {
+        "host": "REDIS_HOST",
+        "port": "REDIS_PORT",
+        "password": "REDIS_PASSWORD"
+    }
+}
