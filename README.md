@@ -1,2 +1,3 @@
 # Authentication-API
-The user authentication API verifies a user is whom they claim to be using the JSON web tokens. There are several endpoints exposed in the project including user signup, login, logout from current/other/all devices along with a protected resource.
+Added JSON Web Token (JWT) based authentication to this REST API. Used access tokens and refresh tokens for user authentication. Used Redis in order to persist user sessions from multiple devices
+
