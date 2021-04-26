@@ -44,3 +44,27 @@ npm start
             "password":"qwertyuiop"
         }
 ```
+```
+    Route: http://localhost:3000/user/login/
+    Request Type: POST
+    Body:
+        {
+            "username":"johndoe",
+            "password":"qwertyuiop"
+        }
+```
+```
+    Route: http://localhost:3000/user/test/
+```
+```
+    Route: http://localhost:3000/user/logout/
+    Request Type: GET
+```
+```
+    Route: http://localhost:3000/user/logout-all-devices/
+    Request Type: GET
+```
+```
+    Route: http://localhost:3000/user/logout-other-devices/
+    Request Type: GET
+```
