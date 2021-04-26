@@ -26,3 +26,21 @@ This is a REST API developed using Node.js that implememts the user authenticati
 ```
 npm install
 ```
+
+#### Run
+```
+npm start
+```
+
+#### Routes
+```
+  Route: http://localhost:3000/user/register/
+    Request Type: POST
+    Body:
+        {
+            "username":"johndoe",
+            "name": "John Doe",
+            "email":"johndoe@gmail.com"
+            "password":"qwertyuiop"
+        }
+```
