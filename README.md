@@ -1,5 +1,7 @@
 ## Authentication-API
 
+[here](#Documentation)
+
 #### Documentation
 ----
 This is a REST API developed using Node.js that implememts the user authentication. Following are the functionalities available:
@@ -7,4 +9,4 @@ This is a REST API developed using Node.js that implememts the user authenticati
 * SignUp
 * Login
 * JWT Auth
-* Logout from cuurent/other/all devices
+* Logout from current/other/all devices
