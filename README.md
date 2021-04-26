@@ -55,6 +55,7 @@ npm start
 ```
 ```
     Route: http://localhost:3000/user/test/
+    Request Type: GET
 ```
 ```
     Route: http://localhost:3000/user/logout/
