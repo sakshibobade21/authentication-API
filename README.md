@@ -21,3 +21,8 @@ This is a REST API developed using Node.js that implememts the user authenticati
 
 ### Documentation
 ----
+
+#### Install Dependencies
+```
+npm install
+```
