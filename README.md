@@ -1,6 +1,9 @@
 ## Authentication-API
 
-* [####Documentation](#Documentation)
+### Contents
+----
+
+* [Documentation](#Documentation)
 
 ### Documentation
 ----
