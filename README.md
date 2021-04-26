@@ -1,8 +1,8 @@
 ## Authentication-API
 
-[here](#Documentation)
+* [####Documentation](#Documentation)
 
-#### Documentation
+### Documentation
 ----
 This is a REST API developed using Node.js that implememts the user authentication. Following are the functionalities available:
 
