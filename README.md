@@ -1,4 +1,5 @@
 ## Authentication-API
+Rest API for user authentication
 
 ### Contents
 * [Description](#Description)
